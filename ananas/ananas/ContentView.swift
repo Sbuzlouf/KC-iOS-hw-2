@@ -10,9 +10,10 @@ import SwiftUI
 struct ContentView: View {
     
     @State var quantity = [0, 0, 0, 0]
-    @State var prices = [2.500, 2.250]
+    @State var prices = 3
+    @State var state = ""
     @State var yourPrice = ""
-    @State var totPrice = 0.0
+    @State var totPrice = 0
     
     var body: some View {
        
@@ -25,14 +26,14 @@ struct ContentView: View {
             
             
                 HStack {
-                    ExtractedView(myquantity: $quantity[0], myPrices: $prices[0], type: "Banana Biscuit")
-                    ExtractedView(myquantity: $quantity[1], myPrices: $prices[1], type: "Mango C.C")
+                    ExtractedView(myquantity: $quantity[0], myPrices: $prices, type: "Banana Biscuit")
+                    ExtractedView(myquantity: $quantity[1], myPrices: $prices, type: "Mango C.C")
                     
                 }
                
                 HStack {
-                    ExtractedView(myquantity: $quantity[2], myPrices: $prices[1], type: "Strawberry C.C")
-                    ExtractedView(myquantity: $quantity[3], myPrices: $prices[1], type: "Berries C.C")
+                    ExtractedView(myquantity: $quantity[2], myPrices: $prices, type: "Strawberry C.C")
+                    ExtractedView(myquantity: $quantity[3], myPrices: $prices, type: "Berries C.C")
                     
                 }
             
@@ -45,27 +46,38 @@ struct ContentView: View {
                     .background(.gray.opacity(0.6))
                     .cornerRadius(15)
                     .multilineTextAlignment(.center)
-                    
                 
+                    
             }
             
-            Button {
+            
+                Text("Press here for receipt")
+                    .padding(9)
+                    .background(.yellow)
+                    .cornerRadius(15)
+                    .foregroundColor(.white)
+                    .onTapGesture {
+                        totPrice = prices * (quantity[0] + quantity[1] + quantity[2] + quantity[3])
+                        
+                        if (yourPrice.isEmpty) {
+                            state = "Oops, you need to fill amount"
+                        }
+                       else if totPrice <= (Int(yourPrice) ?? 0) {
+                            state = "Your order is being proceeded"
+                        }
+                        else {
+                            state = "Sorry, the money is not enough"
+                        }
+                    }
                     
-                } label: {
-                    Text("Press here for receipt")
-                        .padding(9)
-                        .background(.yellow)
-                        .cornerRadius(15)
-                        .foregroundColor(.white)
-                }
-
-                Text("Total price is \(totPrice)")
+                
+                Text("Total price is: \(totPrice) KD")
+            
+                Text(state)
+                .foregroundColor(.red)
                         
             }
                         
-            }
-        func priceCalc (p: Double, q: Int) -> Double {
-            return p * Double(q)
         }
 }
 
@@ -80,8 +92,7 @@ struct ContentView_Previews: PreviewProvider {
 struct ExtractedView: View {
     
     @Binding var myquantity : Int
-    @Binding var myPrices : Double
-    
+    @Binding var myPrices : Int
     @State var type : String
     
     var body: some View {
